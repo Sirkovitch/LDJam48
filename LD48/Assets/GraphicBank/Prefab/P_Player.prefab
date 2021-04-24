@@ -1,5 +1,24 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!95 &13372285051486623
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2124940328667477460}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1a92b2ffc879a6048a5637265e141d5f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &8458164418649756185
 GameObject:
   m_ObjectHideFlags: 0
@@ -77,8 +96,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 5
-  acceleration: 0.1
-  rotateSpeed: 2
+  acceleration: 0.02
+  rotateSpeed: 1
+  thisAn: {fileID: 13372285051486623}
 --- !u!1001 &1277936155314964613
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -104,11 +124,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 891cc99f38423f641b2e1422ba075524, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 891cc99f38423f641b2e1422ba075524, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 891cc99f38423f641b2e1422ba075524, type: 3}
       propertyPath: m_LocalRotation.y
@@ -116,7 +136,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 891cc99f38423f641b2e1422ba075524, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 891cc99f38423f641b2e1422ba075524, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -134,12 +154,21 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 320de9f3a62fff847904f0cf18e4f5ed, type: 2}
+    - target: {fileID: -4678271944266751237, guid: 891cc99f38423f641b2e1422ba075524, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 320de9f3a62fff847904f0cf18e4f5ed, type: 2}
     - target: {fileID: 919132149155446097, guid: 891cc99f38423f641b2e1422ba075524, type: 3}
       propertyPath: m_Name
       value: CHAR_Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 891cc99f38423f641b2e1422ba075524, type: 3}
+--- !u!1 &2124940328667477460 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 891cc99f38423f641b2e1422ba075524, type: 3}
+  m_PrefabInstance: {fileID: 1277936155314964613}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1600639705598144366 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 891cc99f38423f641b2e1422ba075524, type: 3}

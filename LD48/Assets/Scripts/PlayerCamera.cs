@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour
 {
-    public float lerpSpeed = 0.1f;
+    public float lerpSpeed = 0.05f;
     
     private GameObject player;
     private float rotateSpeed;
@@ -31,7 +31,7 @@ public class PlayerCamera : MonoBehaviour
         camPos = this.transform.position;
         this.transform.position = Vector3.Lerp(camPos, expectPos, lerpSpeed);
         transform.LookAt(playerPos);
-        this.transform.localEulerAngles = new Vector3(33, this.transform.localEulerAngles.y, this.transform.localEulerAngles.z); ;
+        //this.transform.localEulerAngles = new Vector3(33, this.transform.localEulerAngles.y, this.transform.localEulerAngles.z); ;
 
 
 

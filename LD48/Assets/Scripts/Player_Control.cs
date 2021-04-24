@@ -12,12 +12,13 @@ public class Player_Control : MonoBehaviour
     private float speed = 0;
     private float forwardAxis;
     private float rotation;
+    public Animator thisAn;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        thisRb = this.transform.GetComponent<Rigidbody>(); ;
+        thisRb = this.transform.GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -31,14 +32,14 @@ public class Player_Control : MonoBehaviour
         }
         else if (forwardAxis < 0)
         {
-            speed = Mathf.Lerp(speed, -maxSpeed, acceleration);
+            speed = Mathf.Lerp(speed, -maxSpeed/2, acceleration);
         }
         else
         {
             speed = Mathf.Lerp(speed, 0, 0.1f);
 
         }
-
+        thisAn.SetFloat("Speed", speed/maxSpeed);
         
     }
     private void Update()
