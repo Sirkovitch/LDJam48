@@ -23,8 +23,6 @@ public class Player_Control : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        //float forwardAxis = Input.GetAxis("Forward") * speed;
-
         thisRb.velocity = speed*this.transform.forward + new Vector3(0, thisRb.velocity.y, 0);
 
         if(forwardAxis > 0)
@@ -48,5 +46,6 @@ public class Player_Control : MonoBehaviour
         forwardAxis = Input.GetAxis("Forward");
         rotation = Input.GetAxis("Rotation") * rotateSpeed;
         this.transform.Rotate(0, rotation, 0);
+
     }
 }
