@@ -19,6 +19,8 @@ public class Player_Control : MonoBehaviour
     void Start()
     {
         thisRb = this.transform.GetComponent<Rigidbody>();
+        GameObject cam = GameObject.FindGameObjectWithTag("MainCamera");
+        cam.transform.position = this.transform.position;
     }
 
     // Update is called once per frame

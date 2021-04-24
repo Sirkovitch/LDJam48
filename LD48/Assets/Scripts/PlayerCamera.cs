@@ -30,10 +30,8 @@ public class PlayerCamera : MonoBehaviour
         expectPos = playerPos + offset;
         camPos = this.transform.position;
         this.transform.position = Vector3.Lerp(camPos, expectPos, lerpSpeed);
-        transform.LookAt(playerPos);
-        //this.transform.localEulerAngles = new Vector3(33, this.transform.localEulerAngles.y, this.transform.localEulerAngles.z); ;
-
-
+     
+        transform.LookAt(player.transform.Find("CamTarget"));
 
     }
 
