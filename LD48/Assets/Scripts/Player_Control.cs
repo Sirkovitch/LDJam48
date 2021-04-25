@@ -12,19 +12,20 @@ public class Player_Control : MonoBehaviour
     private float speed = 0;
     private float forwardAxis;
     private float rotation;
+    public Animator thisAn;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        thisRb = this.transform.GetComponent<Rigidbody>(); ;
+        thisRb = this.transform.GetComponent<Rigidbody>();
+        GameObject cam = GameObject.FindGameObjectWithTag("MainCamera");
+        cam.transform.position = this.transform.position;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        //float forwardAxis = Input.GetAxis("Forward") * speed;
-
         thisRb.velocity = speed*this.transform.forward + new Vector3(0, thisRb.velocity.y, 0);
 
         if(forwardAxis > 0)
@@ -33,14 +34,14 @@ public class Player_Control : MonoBehaviour
         }
         else if (forwardAxis < 0)
         {
-            speed = Mathf.Lerp(speed, -maxSpeed, acceleration);
+            speed = Mathf.Lerp(speed, -maxSpeed/2, acceleration);
         }
         else
         {
             speed = Mathf.Lerp(speed, 0, 0.1f);
 
         }
-
+        thisAn.SetFloat("Speed", speed/maxSpeed);
         
     }
     private void Update()
@@ -48,5 +49,6 @@ public class Player_Control : MonoBehaviour
         forwardAxis = Input.GetAxis("Forward");
         rotation = Input.GetAxis("Rotation") * rotateSpeed;
         this.transform.Rotate(0, rotation, 0);
+
     }
 }
