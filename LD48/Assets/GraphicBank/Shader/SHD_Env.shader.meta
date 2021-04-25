@@ -3,9 +3,10 @@ guid: b19ecbe53c164b248a218186bd8835eb
 ShaderImporter:
   externalObjects: {}
   defaultTextures:
-  - _ENV_ALL_Rock_Side_01_basecolor: {fileID: 2800000, guid: dd25397f468bfa443a5add5ffab8eee8, type: 3}
-  - _ENV_ALL_Rock_Side_01_normal: {fileID: 2800000, guid: 6bb766eb18ac68d40a40dca010ee8b19, type: 3}
-  - _ENV_ALL_Rock_Side_01_raoh: {fileID: 2800000, guid: 796f02a4034081d429f196dcfe8b3780, type: 3}
+  - _Diffuse: {fileID: 2800000, guid: dd25397f468bfa443a5add5ffab8eee8, type: 3}
+  - _BrushMask: {fileID: 2800000, guid: b74901db677bc9446b1b4a6d8ef483ed, type: 3}
+  - _Normal: {fileID: 2800000, guid: 6bb766eb18ac68d40a40dca010ee8b19, type: 3}
+  - _RAoO: {fileID: 2800000, guid: 796f02a4034081d429f196dcfe8b3780, type: 3}
   nonModifiableTextures: []
   preprocessorOverride: 0
   userData: 
