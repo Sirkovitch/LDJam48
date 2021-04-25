@@ -6,8 +6,8 @@ public class DioramaManager : MonoBehaviour
 {
     public float transitionStep = 0.01f;
 
-    private GameObject[] diorama1;
-    private GameObject[] diorama2;
+    private Transform diorama1;
+    private Transform diorama2;
     private float transition1 = 0;
     private float transition2 = 0;
     private Vector3 diorama1Pos;
@@ -26,18 +26,18 @@ public class DioramaManager : MonoBehaviour
         diorama2Pos = this.transform.Find("Diorama2Pos").transform.position;
         this.transform.Find("ParticleDiorama2").transform.position = new Vector3(diorama2Pos.x, 0, diorama2Pos.z);
 
-        diorama1 = GameObject.FindGameObjectsWithTag("Diorama1");
-        foreach(GameObject go in diorama1)
+        diorama1 = GameObject.FindGameObjectWithTag("Diorama1").GetComponent<Transform>();
+        foreach(Transform go in diorama1)
         {
-            go.GetComponent<Renderer>().material.SetFloat("_Transition", 0);
-            go.GetComponent<Renderer>().material.SetVector("_DioramaPos", diorama1Pos);
+            go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", 0);
+            go.gameObject.GetComponent<Renderer>().material.SetVector("_DioramaPos", diorama1Pos);
 
         }
-        diorama2 = GameObject.FindGameObjectsWithTag("Diorama2");
-        foreach (GameObject go in diorama2)
+        diorama2 = GameObject.FindGameObjectWithTag("Diorama2").GetComponent<Transform>();
+        foreach (Transform go in diorama2)
         {
-            go.GetComponent<Renderer>().material.SetFloat("_Transition", 0);
-            go.GetComponent<Renderer>().material.SetVector("_DioramaPos", diorama2Pos);
+            go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", 0);
+            go.gameObject.GetComponent<Renderer>().material.SetVector("_DioramaPos", diorama2Pos);
 
         }
 
@@ -69,12 +69,13 @@ public class DioramaManager : MonoBehaviour
             var shape = this.transform.Find("ParticleDiorama1").GetComponent<ParticleSystem>().shape;
             shape.radius = Mathf.Lerp(shape.radius, 10, transitionStep);
 
-            diorama1 = GameObject.FindGameObjectsWithTag("Diorama1");
-            foreach (GameObject go in diorama1)
+            diorama1 = GameObject.FindGameObjectWithTag("Diorama1").GetComponent<Transform>();
+            foreach (Transform go in diorama1)
             {
                 transition1 = Mathf.Lerp(transition1, 5, transitionStep);
-                go.GetComponent<Renderer>().material.SetFloat("_Transition", transition1);
+                go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", transition1);
             }
+
         }
         if (transition1 > 4)
         {
@@ -89,11 +90,11 @@ public class DioramaManager : MonoBehaviour
             var shape = this.transform.Find("ParticleDiorama2").GetComponent<ParticleSystem>().shape;
             shape.radius = Mathf.Lerp(shape.radius, 10, transitionStep);
 
-            diorama2 = GameObject.FindGameObjectsWithTag("Diorama2");
-            foreach (GameObject go in diorama2)
+            diorama2 = GameObject.FindGameObjectWithTag("Diorama2").GetComponent<Transform>();
+            foreach (Transform go in diorama2)
             {
                 transition2 = Mathf.Lerp(transition2, 5, transitionStep);
-                go.GetComponent<Renderer>().material.SetFloat("_Transition", transition2);
+                go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", transition2);
             }
         }
         if (transition2 > 4)

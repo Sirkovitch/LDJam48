@@ -45,12 +45,9 @@ public class Player_Control : MonoBehaviour
         forceSpeed = Mathf.Lerp(forceSpeed, speed, lerpSpeed);
 
         thisAn.SetFloat("Speed", forceSpeed);
-    }
-    void FixedUpdate()
-    {
+
         if (speed > .7)
         {
-            print("AAA");
             //slowly rotate when speed is high
             Vector3 lookDirection = new Vector3(lateralAxis, 0, forwardAxis);
 
@@ -60,6 +57,10 @@ public class Player_Control : MonoBehaviour
             float visualAngle = transform.eulerAngles.y * Mathf.Deg2Rad;
 
         }
+    }
+    void FixedUpdate()
+    {
+
         this.GetComponent<Rigidbody>().velocity = this.transform.forward * forceSpeed * maxSpeed;
 
     }
