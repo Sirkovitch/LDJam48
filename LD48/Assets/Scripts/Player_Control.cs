@@ -6,7 +6,7 @@ public class Player_Control : MonoBehaviour
 {
     public float maxSpeed = 5;
     public float acceleration = 0.1f;
-    public float rotateSpeed = 2;
+    public float rotateSpeed = 4;
     
     private Rigidbody thisRb;
     private float speed = 0;
