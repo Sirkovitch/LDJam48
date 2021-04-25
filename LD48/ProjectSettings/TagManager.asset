@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Diorama1
   - Diorama2
+  - Marbles
   layers:
   - Default
   - TransparentFX
