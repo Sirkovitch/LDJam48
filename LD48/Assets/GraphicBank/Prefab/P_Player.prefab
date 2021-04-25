@@ -127,8 +127,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 5
-  acceleration: 0.02
-  rotateSpeed: 1
+  lerpSpeed: 0.01
+  lerpRot: 0.05
   thisAn: {fileID: 13372285051486623}
 --- !u!1001 &1277936155314964613
 PrefabInstance:
