@@ -5,50 +5,63 @@ using UnityEngine;
 public class Player_Control : MonoBehaviour
 {
     public float maxSpeed = 5;
-    public float acceleration = 0.1f;
-    public float rotateSpeed = 4;
-    
-    private Rigidbody thisRb;
+    public float lerpSpeed = 0.01f;
+    public float lerpRot = 0.01f;
+    public Animator thisAn;
+
+
     private float speed = 0;
     private float forwardAxis;
-    private float rotation;
-    public Animator thisAn;
+    private float lateralAxis;
+    private float forceSpeed = 0;
+
 
 
     // Start is called before the first frame update
     void Start()
     {
-        thisRb = this.transform.GetComponent<Rigidbody>();
         GameObject cam = GameObject.FindGameObjectWithTag("MainCamera");
         cam.transform.position = this.transform.position;
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        thisRb.velocity = speed*this.transform.forward + new Vector3(0, thisRb.velocity.y, 0);
 
-        if(forwardAxis > 0)
+    void Update()
+    {
+        forwardAxis = Input.GetAxis("Forward");
+        lateralAxis = Input.GetAxis("Rotation");
+
+        speed = Mathf.Clamp(Mathf.Abs(forwardAxis) + Mathf.Abs(lateralAxis), 0, 1);
+
+        //change lerpSpeed if joystick is moved or not
+        if (speed > 0)
         {
-            speed = Mathf.Lerp(speed, maxSpeed, acceleration);
-        }
-        else if (forwardAxis < 0)
-        {
-            speed = Mathf.Lerp(speed, -maxSpeed/2, acceleration);
+            lerpSpeed = 0.01f;
         }
         else
         {
-            speed = Mathf.Lerp(speed, 0, 0.1f);
+            lerpSpeed = 0.05f;
+        }
+
+        forceSpeed = Mathf.Lerp(forceSpeed, speed, lerpSpeed);
+
+        thisAn.SetFloat("Speed", forceSpeed);
+
+        if (speed > .7)
+        {
+            //slowly rotate when speed is high
+            Vector3 lookDirection = new Vector3(lateralAxis, 0, forwardAxis);
+
+            Quaternion lookRotation = Quaternion.LookRotation(lookDirection, Vector3.up);
+
+            this.transform.rotation = Quaternion.Lerp(this.transform.rotation, lookRotation, lerpRot);
+            float visualAngle = transform.eulerAngles.y * Mathf.Deg2Rad;
 
         }
-        thisAn.SetFloat("Speed", speed/maxSpeed);
-        
     }
-    private void Update()
+    void FixedUpdate()
     {
-        forwardAxis = Input.GetAxis("Forward");
-        rotation = Input.GetAxis("Rotation") * rotateSpeed;
-        this.transform.Rotate(0, rotation, 0);
+
+        this.GetComponent<Rigidbody>().velocity = this.transform.forward * forceSpeed * maxSpeed;
 
     }
 }

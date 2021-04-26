@@ -21,7 +21,7 @@ public class PlayerCamera : MonoBehaviour
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        rotateSpeed = player.GetComponent<Player_Control>().rotateSpeed;
+        //rotateSpeed = player.GetComponent<Player_Control>().rotateSpeed;
         offset = new Vector3(player.transform.position.x, player.transform.position.y + offsetY, player.transform.position.z + offsetZ);
     }
 
