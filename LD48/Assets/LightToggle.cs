@@ -14,7 +14,7 @@ public class LightToggle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        intensity = Mathf.Lerp(intensity, 400000, 0.002f);
+        intensity = Mathf.Lerp(intensity, 400000, 0.001f);
         this.GetComponent<Light>().intensity = intensity;
     }
 }

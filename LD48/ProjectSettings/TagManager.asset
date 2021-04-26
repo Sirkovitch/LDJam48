@@ -10,6 +10,7 @@ TagManager:
   - Diorama3
   - DioramaManager
   - Diorama4
+  - Snow
   layers:
   - Default
   - TransparentFX
