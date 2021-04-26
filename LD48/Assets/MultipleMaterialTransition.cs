@@ -14,6 +14,6 @@ public class MultipleMaterialTransition : MonoBehaviour
     void Update()
     {
         var transi = this.GetComponent<Renderer>().materials[0].GetFloat("_Transition");
-        this.GetComponent<Renderer>().materials[1].SetFloat("_Transition", transi);
+        this.GetComponent<Renderer>().materials[1].SetFloat("_Transition", transi*1.5f);
     }
 }
