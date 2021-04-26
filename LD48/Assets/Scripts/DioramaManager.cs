@@ -50,8 +50,11 @@ public class DioramaManager : MonoBehaviour
                 diorama1 = GameObject.FindGameObjectWithTag("Diorama1").GetComponent<Transform>();
                 foreach (Transform go in diorama1)
                 {
-                    go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", 0);
-                    go.gameObject.GetComponent<Renderer>().material.SetVector("_DioramaPos", diorama1Pos);
+                    if(go.gameObject.GetComponent<Renderer>() != null)
+                    {
+                        go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", 0);
+                        go.gameObject.GetComponent<Renderer>().material.SetVector("_DioramaPos", diorama1Pos);
+                    }
 
                 }
             }
@@ -59,8 +62,12 @@ public class DioramaManager : MonoBehaviour
             diorama1 = GameObject.FindGameObjectWithTag("Diorama1").GetComponent<Transform>();
             foreach (Transform go in diorama1)
             {
-                transition1 = Mathf.Lerp(transition1, 5, transitionStep);
-                go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", transition1);
+                if (go.gameObject.GetComponent<Renderer>() != null)
+                {
+                    transition1 = Mathf.Lerp(transition1, 5, transitionStep);
+                    go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", transition1);
+                }
+
             }
 
         }
@@ -75,8 +82,12 @@ public class DioramaManager : MonoBehaviour
                 diorama2 = GameObject.FindGameObjectWithTag("Diorama2").GetComponent<Transform>();
                 foreach (Transform go in diorama2)
                 {
-                    go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", 0);
-                    go.gameObject.GetComponent<Renderer>().material.SetVector("_DioramaPos", diorama2Pos);
+                    if (go.gameObject.GetComponent<Renderer>() != null)
+                    {
+                        go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", 0);
+                        go.gameObject.GetComponent<Renderer>().material.SetVector("_DioramaPos", diorama2Pos);
+                    }
+
 
                 }
             }
@@ -84,8 +95,12 @@ public class DioramaManager : MonoBehaviour
             diorama2 = GameObject.FindGameObjectWithTag("Diorama2").GetComponent<Transform>();
             foreach (Transform go in diorama2)
             {
-                transition2 = Mathf.Lerp(transition2, 5, transitionStep);
-                go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", transition2);
+                if (go.gameObject.GetComponent<Renderer>() != null)
+                {
+                    transition2 = Mathf.Lerp(transition2, 5, transitionStep);
+                    go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", transition2);
+                }
+
             }
         }
 
@@ -99,8 +114,11 @@ public class DioramaManager : MonoBehaviour
                 diorama3 = GameObject.FindGameObjectWithTag("Diorama3").GetComponent<Transform>();
                 foreach (Transform go in diorama3)
                 {
-                    go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", 0);
-                    go.gameObject.GetComponent<Renderer>().material.SetVector("_DioramaPos", diorama3Pos);
+                    if (go.gameObject.GetComponent<Renderer>() != null)
+                    {
+                        go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", 0);
+                        go.gameObject.GetComponent<Renderer>().material.SetVector("_DioramaPos", diorama3Pos);
+                    }
 
                 }
             }
@@ -108,8 +126,12 @@ public class DioramaManager : MonoBehaviour
             diorama3 = GameObject.FindGameObjectWithTag("Diorama3").GetComponent<Transform>();
             foreach (Transform go in diorama3)
             {
-                transition3 = Mathf.Lerp(transition3, 5, transitionStep);
-                go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", transition3);
+                if (go.gameObject.GetComponent<Renderer>() != null)
+                {
+                    transition3 = Mathf.Lerp(transition3, 5, transitionStep);
+                    go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", transition3);
+                }
+
             }
         }
 
@@ -122,8 +144,12 @@ public class DioramaManager : MonoBehaviour
                 diorama4 = GameObject.FindGameObjectWithTag("Diorama4").GetComponent<Transform>();
                 foreach (Transform go in diorama4)
                 {
-                    go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", 0);
-                    go.gameObject.GetComponent<Renderer>().material.SetVector("_DioramaPos", diorama4Pos);
+                    if (go.gameObject.GetComponent<Renderer>() != null)
+                    {
+                        go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", 0);
+                        go.gameObject.GetComponent<Renderer>().material.SetVector("_DioramaPos", diorama4Pos);
+                    }
+
 
                 }
             }
@@ -131,8 +157,12 @@ public class DioramaManager : MonoBehaviour
             diorama4 = GameObject.FindGameObjectWithTag("Diorama4").GetComponent<Transform>();
             foreach (Transform go in diorama4)
             {
-                transition4 = Mathf.Lerp(transition4, 5, transitionStep);
-                go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", transition4);
+                if (go.gameObject.GetComponent<Renderer>() != null)
+                {
+                    transition4 = Mathf.Lerp(transition4, 5, transitionStep);
+                    go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", transition4);
+                }
+
             }
         }
 
