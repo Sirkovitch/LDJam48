@@ -61,7 +61,7 @@ public class Player_Control : MonoBehaviour
     void FixedUpdate()
     {
 
-        this.GetComponent<Rigidbody>().velocity = this.transform.forward * forceSpeed * maxSpeed;
+        this.GetComponent<Rigidbody>().velocity = this.transform.forward * forceSpeed * maxSpeed + new Vector3(0, this.GetComponent<Rigidbody>().velocity.y, 0); ;
 
     }
 }
