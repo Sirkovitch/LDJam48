@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 3bfe5e9b03a2cb64fb3ac5eb48351e3e
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _T_Moon: {fileID: 2800000, guid: 6931e07002d1d3c49999dd17f42ba441, type: 3}
+  - _TextureSample0: {fileID: 2800000, guid: 95aaba0d6a899f84cb4fb44ec2d71b3f, type: 3}
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
