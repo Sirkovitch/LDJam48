@@ -8,6 +8,8 @@ TagManager:
   - Diorama2
   - Marbles
   - Diorama3
+  - DioramaManager
+  - Diorama4
   layers:
   - Default
   - TransparentFX
