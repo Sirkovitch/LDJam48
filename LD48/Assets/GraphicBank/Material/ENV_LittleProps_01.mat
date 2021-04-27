@@ -96,7 +96,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RAoO:
-        m_Texture: {fileID: 2800000, guid: 796f02a4034081d429f196dcfe8b3780, type: 3}
+        m_Texture: {fileID: 2800000, guid: ff32687df9e6aae4c98c0621ea143206, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecularColorMap:
