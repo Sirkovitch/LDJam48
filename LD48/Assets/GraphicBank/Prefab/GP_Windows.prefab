@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!65 &4240099929933823807
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3897502338873557612}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.5281268, y: 1.9587419, z: 0.08226017}
+  m_Center: {x: -0.2640656, y: 0.97937095, z: 0.041129608}
 --- !u!95 &4240099929016519236
 Animator:
   serializedVersion: 3
@@ -438,7 +451,7 @@ MonoBehaviour:
         fsmIntParams: []
         fsmBoolParams:
         - useVariable: 1
-          name: B_Animation
+          name: G_B_Day_Night
           tooltip: 
           showInInspector: 0
           networkSync: 0
@@ -999,19 +1012,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.9059908, y: 2.9637387, z: 2.399476}
   m_Center: {x: 0.058382377, y: 0.98186934, z: 0.04333614}
---- !u!65 &4240099929933823807
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3897502338873557612}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.5281268, y: 1.9587419, z: 0.08226017}
-  m_Center: {x: -0.2640656, y: 0.97937095, z: 0.041129608}
 --- !u!1001 &4240099929016519235
 PrefabInstance:
   m_ObjectHideFlags: 0
