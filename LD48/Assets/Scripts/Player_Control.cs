@@ -35,7 +35,7 @@ public class Player_Control : MonoBehaviour
         //change lerpSpeed if joystick is moved or not
         if (speed > 0)
         {
-            lerpSpeed = 0.01f;
+            lerpSpeed = 0.03f;
         }
         else
         {
