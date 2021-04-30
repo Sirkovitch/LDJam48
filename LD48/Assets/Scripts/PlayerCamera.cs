@@ -14,6 +14,8 @@ public class PlayerCamera : MonoBehaviour
     private Vector3 playerPos;
     private Vector3 camPos;
     private Vector3 expectPos;
+    private bool camZoneOn = false;
+    private Vector3 offsetFin;
 
     private Vector3 offset;
 
@@ -23,16 +25,26 @@ public class PlayerCamera : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         //rotateSpeed = player.GetComponent<Player_Control>().rotateSpeed;
         offset = new Vector3(player.transform.position.x, player.transform.position.y + offsetY, player.transform.position.z + offsetZ);
+        offsetFin = offset;
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
-        if(switchMode == false)
+        if (player.GetComponent<Player_Control>().camZone == true)
+        {
+            offsetFin = Vector3.Lerp(offsetFin, offset + new Vector3(0, 5, -10), 0.01f);
+        }
+        else
+        {
+            offsetFin = Vector3.Lerp(offsetFin, offset, 0.01f);
+        }
+
+        if (switchMode == false)
         {
             playerPos = player.transform.position;
-            offset = Quaternion.AngleAxis((Input.GetAxis("Rotation")) * rotateSpeed, Vector3.up) * offset;
-            expectPos = playerPos + offset;
+            offsetFin = Quaternion.AngleAxis((Input.GetAxis("Rotation")) * rotateSpeed, Vector3.up) * offsetFin;
+            expectPos = playerPos + offsetFin;
             camPos = this.transform.position;
             this.transform.position = Vector3.Lerp(camPos, expectPos, lerpSpeed);
 
@@ -41,7 +53,7 @@ public class PlayerCamera : MonoBehaviour
         else
         {
             playerPos = player.transform.position;
-            expectPos = playerPos + offset;
+            expectPos = playerPos + offsetFin;
             camPos = this.transform.position;
             this.transform.position = Vector3.Lerp(camPos, expectPos, lerpSpeed);
 

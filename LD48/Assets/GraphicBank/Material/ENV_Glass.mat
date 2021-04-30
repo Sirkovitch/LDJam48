@@ -252,6 +252,7 @@ Material:
     - _UseEmissiveIntensity: 0
     - _UseMetallic: 0
     - _UseShadowThreshold: 0
+    - _WinterTransi: 0
     - _WorldUV: 0
     - _ZTestDepthEqualForOpaque: 3
     - _ZTestGBuffer: 3
@@ -260,7 +261,7 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 0.3679245, g: 0.3679245, b: 0.3679245, a: 1}
+    - _Color: {r: 0.3962264, g: 0.3962264, b: 0.3962264, a: 1}
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DioramaPos: {r: 5.7, g: 0.57, b: -0.81, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}

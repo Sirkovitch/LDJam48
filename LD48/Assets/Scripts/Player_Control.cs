@@ -8,6 +8,7 @@ public class Player_Control : MonoBehaviour
     public float lerpSpeed = 0.01f;
     public float lerpRot = 0.01f;
     public Animator thisAn;
+    public bool camZone = false;
 
 
     private float speed = 0;
@@ -56,6 +57,21 @@ public class Player_Control : MonoBehaviour
             this.transform.rotation = Quaternion.Lerp(this.transform.rotation, lookRotation, lerpRot);
             float visualAngle = transform.eulerAngles.y * Mathf.Deg2Rad;
 
+        }
+        
+    }
+    private void OnTriggerEnter(Collider Collider)
+    {
+        if(Collider.tag == "CamZone")
+        {
+            camZone = true;
+        }
+    }
+    private void OnTriggerExit(Collider Collider)
+    {
+        if (Collider.tag == "CamZone")
+        {
+            camZone = false;
         }
     }
     void FixedUpdate()
