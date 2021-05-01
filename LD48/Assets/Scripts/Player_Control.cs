@@ -9,7 +9,7 @@ public class Player_Control : MonoBehaviour
     public float lerpRot = 0.01f;
     public Animator thisAn;
     public bool camZone = false;
-
+    public bool camZone2 = false;
 
     private float speed = 0;
     private float forwardAxis;
@@ -66,12 +66,20 @@ public class Player_Control : MonoBehaviour
         {
             camZone = true;
         }
+        if (Collider.tag == "CamZone2")
+        {
+            camZone2 = true;
+        }
     }
     private void OnTriggerExit(Collider Collider)
     {
         if (Collider.tag == "CamZone")
         {
             camZone = false;
+        }
+        if (Collider.tag == "CamZone2")
+        {
+            camZone2 = false;
         }
     }
     void FixedUpdate()
