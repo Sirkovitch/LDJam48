@@ -35,6 +35,10 @@ public class PlayerCamera : MonoBehaviour
         {
             offsetFin = Vector3.Lerp(offsetFin, offset + new Vector3(0, 5, -10), 0.01f);
         }
+        else if (player.GetComponent<Player_Control>().camZone2 == true)
+        {
+            offsetFin = Vector3.Lerp(offsetFin, offset + new Vector3(0, -7, -5), 0.01f);
+        }
         else
         {
             offsetFin = Vector3.Lerp(offsetFin, offset, 0.01f);

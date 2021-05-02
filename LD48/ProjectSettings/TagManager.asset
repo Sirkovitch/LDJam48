@@ -12,6 +12,7 @@ TagManager:
   - Diorama4
   - Snow
   - CamZone
+  - CamZone2
   layers:
   - Default
   - TransparentFX
