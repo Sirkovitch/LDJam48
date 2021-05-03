@@ -269,7 +269,7 @@ ModelImporter:
     second: ENV_Windows_Support|R_HS_Roof_WindowFrame_T03|R_HS_Roof_WindowFrame_T03|R_HS_Roof_W
   externalObjects: {}
   materials:
-    materialImportMode: 2
+    materialImportMode: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 1
