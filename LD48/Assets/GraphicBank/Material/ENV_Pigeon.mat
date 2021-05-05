@@ -55,7 +55,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Diffuse:
-        m_Texture: {fileID: 2800000, guid: 5787617d2f192f84f995f1834bf3bbe3, type: 3}
+        m_Texture: {fileID: 2800000, guid: 57b91a8a4c88d924f984d40382e945e5, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissiveColorMap:
