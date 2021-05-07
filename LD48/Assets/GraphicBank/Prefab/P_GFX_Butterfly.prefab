@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7011291670666044700}
   - component: {fileID: 7011291670666044703}
   m_Layer: 0
-  m_Name: GFX_Butterfly
+  m_Name: P_GFX_Butterfly
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4776,7 +4776,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f6d98d0128703f84faac2443861aa527, type: 2}
+  - {fileID: 2100000, guid: 2e9a07c0fb62944478ce6f932004b99b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
