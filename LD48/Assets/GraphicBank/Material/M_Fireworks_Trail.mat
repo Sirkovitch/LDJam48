@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_Firefly
+  m_Name: M_Fireworks_Trail
   m_Shader: {fileID: -6465566751694194690, guid: 7040fa13885724b4eab4a41f0931b993, type: 3}
   m_ShaderKeywords: _ALPHATEST_ON _DISABLE_SSR_TRANSPARENT _DOUBLESIDED_ON
   m_LightmapFlags: 4
@@ -27,7 +27,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - Texture2D_b62370c8db744bb6b939fccc7903fdc8:
-        m_Texture: {fileID: 2800000, guid: 6931e07002d1d3c49999dd17f42ba441, type: 3}
+        m_Texture: {fileID: 2800000, guid: 02f71419854c0d845a930c9e0a0bf775, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _AnisotropyMap:
@@ -302,7 +302,7 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 1
     m_Colors:
-    - Color_dda0ec4f1d5a45e992a0eeec6dceabe1: {r: 0.8293022, g: 1, b: 0.109803915, a: 0}
+    - Color_dda0ec4f1d5a45e992a0eeec6dceabe1: {r: 1, g: 1, b: 1, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
