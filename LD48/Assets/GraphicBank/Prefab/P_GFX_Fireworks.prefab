@@ -10392,8 +10392,8 @@ ParticleSystem:
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
     donutRadius: 0.2
-    m_Position: {x: -1.5, y: 1, z: -0.5}
-    m_Rotation: {x: -90, y: -90, z: 0}
+    m_Position: {x: -0.25, y: 1, z: 1.25}
+    m_Rotation: {x: -90, y: 10, z: 0}
     m_Scale: {x: 2.5, y: 1, z: 1}
     placementMode: 0
     m_MeshMaterialIndex: 0
@@ -13764,12 +13764,12 @@ ParticleSystem:
     enabled: 1
     subEmitters:
     - serializedVersion: 3
-      emitter: {fileID: 1153472212277988609}
+      emitter: {fileID: 0}
       type: 2
       properties: 1
       emitProbability: 1
     - serializedVersion: 3
-      emitter: {fileID: 1153472213870266264}
+      emitter: {fileID: 0}
       type: 2
       properties: 1
       emitProbability: 1
