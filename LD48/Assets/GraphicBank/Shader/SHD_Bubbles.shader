@@ -6,7 +6,6 @@ Shader "SHD_Bubbles"
 	{
 		[HideInInspector] _AlphaCutoff("Alpha Cutoff ", Range(0, 1)) = 0.5
 		[HideInInspector] _EmissionColor("Emission Color", Color) = (1,1,1,1)
-		_Smoothness("Smoothness", Range( 0 , 1)) = 0
 		_Alpha("Alpha", Range( 0 , 1)) = 0
 		[ASEEnd]_Float0("Float 0", Float) = 0
 
@@ -281,11 +280,11 @@ Shader "SHD_Bubbles"
 
 			HLSLPROGRAM
 
-			#define _SPECULAR_OCCLUSION_FROM_AO 1
-			#define _DISABLE_DECALS 1
-			#define _DISABLE_SSR_TRANSPARENT 1
 			#define _HAS_REFRACTION 1
 			#define _REFRACTION_SPHERE 1
+			#define _DISABLE_DECALS 1
+			#define _DISABLE_SSR_TRANSPARENT 1
+			#define _SPECULAR_OCCLUSION_FROM_AO 1
 			#define ASE_SRP_VERSION 999999
 
 
@@ -329,7 +328,6 @@ Shader "SHD_Bubbles"
 			#endif
 
 			CBUFFER_START( UnityPerMaterial )
-			float _Smoothness;
 			float _Alpha;
 			float _Float0;
 			float4 _EmissionColor;
@@ -391,7 +389,9 @@ Shader "SHD_Bubbles"
 			#include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitDecalData.hlsl"
 			#include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderGraphFunctions.hlsl"
 
-			
+			#define ASE_NEEDS_FRAG_WORLD_VIEW_DIR
+			#define ASE_NEEDS_FRAG_WORLD_NORMAL
+
 
 			#if defined(_DOUBLESIDED_ON) && !defined(ASE_NEED_CULLFACE)
 				#define ASE_NEED_CULLFACE 1
@@ -786,6 +786,8 @@ Shader "SHD_Bubbles"
 				BuiltinData builtinData;
 
 				GlobalSurfaceDescription surfaceDescription = (GlobalSurfaceDescription)0;
+				float fresnelNdotV17 = dot( normalWS, V );
+				float fresnelNode17 = ( 0.0 + 1.0 * pow( 1.0 - fresnelNdotV17, 0.1 ) );
 				
 				surfaceDescription.Albedo = float3( 0.5, 0.5, 0.5 );
 				surfaceDescription.Normal = float3( 0, 0, 1 );
@@ -798,7 +800,7 @@ Shader "SHD_Bubbles"
 				#endif
 
 				surfaceDescription.Emission = 0;
-				surfaceDescription.Smoothness = _Smoothness;
+				surfaceDescription.Smoothness = saturate( fresnelNode17 );
 				surfaceDescription.Occlusion = 1;
 				surfaceDescription.Alpha = _Alpha;
 
@@ -887,11 +889,11 @@ Shader "SHD_Bubbles"
 
 			HLSLPROGRAM
 
-			#define _SPECULAR_OCCLUSION_FROM_AO 1
-			#define _DISABLE_DECALS 1
-			#define _DISABLE_SSR_TRANSPARENT 1
 			#define _HAS_REFRACTION 1
 			#define _REFRACTION_SPHERE 1
+			#define _DISABLE_DECALS 1
+			#define _DISABLE_SSR_TRANSPARENT 1
+			#define _SPECULAR_OCCLUSION_FROM_AO 1
 			#define ASE_SRP_VERSION 999999
 
 
@@ -924,7 +926,6 @@ Shader "SHD_Bubbles"
 			#endif
 			
 			CBUFFER_START( UnityPerMaterial )
-			float _Smoothness;
 			float _Alpha;
 			float _Float0;
 			float4 _EmissionColor;
@@ -986,7 +987,8 @@ Shader "SHD_Bubbles"
 			#include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitDecalData.hlsl"
 			#include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderGraphFunctions.hlsl"
 
-			
+			#define ASE_NEEDS_VERT_NORMAL
+
 
 			#if defined(_DOUBLESIDED_ON) && !defined(ASE_NEED_CULLFACE)
 				#define ASE_NEED_CULLFACE 1
@@ -1007,7 +1009,8 @@ Shader "SHD_Bubbles"
 			struct PackedVaryingsMeshToPS
 			{
 				float4 positionCS : SV_Position;
-				
+				float4 ase_texcoord : TEXCOORD0;
+				float4 ase_texcoord1 : TEXCOORD1;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				#if defined(SHADER_STAGE_FRAGMENT) && defined(ASE_NEED_CULLFACE)
 				FRONT_FACE_TYPE cullFace : FRONT_FACE_SEMANTIC;
@@ -1213,7 +1216,15 @@ Shader "SHD_Bubbles"
 				UNITY_SETUP_INSTANCE_ID(inputMesh);
 				UNITY_TRANSFER_INSTANCE_ID(inputMesh, outputPackedVaryingsMeshToPS);
 
+				float3 ase_worldPos = GetAbsolutePositionWS( TransformObjectToWorld( (inputMesh.positionOS).xyz ) );
+				outputPackedVaryingsMeshToPS.ase_texcoord.xyz = ase_worldPos;
+				float3 ase_worldNormal = TransformObjectToWorldNormal(inputMesh.normalOS);
+				outputPackedVaryingsMeshToPS.ase_texcoord1.xyz = ase_worldNormal;
 				
+				
+				//setting value to unused interpolator channels and avoid initialization warnings
+				outputPackedVaryingsMeshToPS.ase_texcoord.w = 0;
+				outputPackedVaryingsMeshToPS.ase_texcoord1.w = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 				float3 defaultVertexValue = inputMesh.positionOS.xyz;
@@ -1364,6 +1375,12 @@ Shader "SHD_Bubbles"
 				SurfaceData surfaceData;
 				BuiltinData builtinData;
 				GlobalSurfaceDescription surfaceDescription = (GlobalSurfaceDescription)0;
+				float3 ase_worldPos = packedInput.ase_texcoord.xyz;
+				float3 ase_worldViewDir = ( _WorldSpaceCameraPos.xyz - ase_worldPos );
+				ase_worldViewDir = normalize(ase_worldViewDir);
+				float3 ase_worldNormal = packedInput.ase_texcoord1.xyz;
+				float fresnelNdotV17 = dot( ase_worldNormal, ase_worldViewDir );
+				float fresnelNode17 = ( 0.0 + 1.0 * pow( 1.0 - fresnelNdotV17, 0.1 ) );
 				
 				surfaceDescription.Albedo = float3( 0.5, 0.5, 0.5 );
 				surfaceDescription.Normal = float3( 0, 0, 1 );
@@ -1376,7 +1393,7 @@ Shader "SHD_Bubbles"
 				#endif
 
 				surfaceDescription.Emission = 0;
-				surfaceDescription.Smoothness = _Smoothness;
+				surfaceDescription.Smoothness = saturate( fresnelNode17 );
 				surfaceDescription.Occlusion = 1;
 				surfaceDescription.Alpha = _Alpha;
 
@@ -1458,11 +1475,11 @@ Shader "SHD_Bubbles"
 
 			HLSLPROGRAM
 
-			#define _SPECULAR_OCCLUSION_FROM_AO 1
-			#define _DISABLE_DECALS 1
-			#define _DISABLE_SSR_TRANSPARENT 1
 			#define _HAS_REFRACTION 1
 			#define _REFRACTION_SPHERE 1
+			#define _DISABLE_DECALS 1
+			#define _DISABLE_SSR_TRANSPARENT 1
+			#define _SPECULAR_OCCLUSION_FROM_AO 1
 			#define ASE_SRP_VERSION 999999
 
 
@@ -1497,7 +1514,6 @@ Shader "SHD_Bubbles"
 			#endif
 
 			CBUFFER_START( UnityPerMaterial )
-			float _Smoothness;
 			float _Alpha;
 			float _Float0;
 			float4 _EmissionColor;
@@ -1927,11 +1943,11 @@ Shader "SHD_Bubbles"
 
 			HLSLPROGRAM
 
-			#define _SPECULAR_OCCLUSION_FROM_AO 1
-			#define _DISABLE_DECALS 1
-			#define _DISABLE_SSR_TRANSPARENT 1
 			#define _HAS_REFRACTION 1
 			#define _REFRACTION_SPHERE 1
+			#define _DISABLE_DECALS 1
+			#define _DISABLE_SSR_TRANSPARENT 1
+			#define _SPECULAR_OCCLUSION_FROM_AO 1
 			#define ASE_SRP_VERSION 999999
 
 
@@ -1966,7 +1982,6 @@ Shader "SHD_Bubbles"
 			#endif
 
 			CBUFFER_START( UnityPerMaterial )
-			float _Smoothness;
 			float _Alpha;
 			float _Float0;
 			float4 _EmissionColor;
@@ -2406,11 +2421,11 @@ Shader "SHD_Bubbles"
 
 			HLSLPROGRAM
 
-			#define _SPECULAR_OCCLUSION_FROM_AO 1
-			#define _DISABLE_DECALS 1
-			#define _DISABLE_SSR_TRANSPARENT 1
 			#define _HAS_REFRACTION 1
 			#define _REFRACTION_SPHERE 1
+			#define _DISABLE_DECALS 1
+			#define _DISABLE_SSR_TRANSPARENT 1
+			#define _SPECULAR_OCCLUSION_FROM_AO 1
 			#define ASE_SRP_VERSION 999999
 
 
@@ -2447,7 +2462,6 @@ Shader "SHD_Bubbles"
 			#endif
 			
 			CBUFFER_START( UnityPerMaterial )
-			float _Smoothness;
 			float _Alpha;
 			float _Float0;
 			float4 _EmissionColor;
@@ -2509,7 +2523,9 @@ Shader "SHD_Bubbles"
 			#include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitDecalData.hlsl"
 			#include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderGraphFunctions.hlsl"
 
-			
+			#define ASE_NEEDS_FRAG_WORLD_VIEW_DIR
+			#define ASE_NEEDS_FRAG_WORLD_NORMAL
+
 
 			#if defined(_DOUBLESIDED_ON) && !defined(ASE_NEED_CULLFACE)
 				#define ASE_NEED_CULLFACE 1
@@ -2856,9 +2872,11 @@ Shader "SHD_Bubbles"
 				float3 V = GetWorldSpaceNormalizeViewDir(input.positionRWS);
 
 				SmoothSurfaceDescription surfaceDescription = (SmoothSurfaceDescription)0;
+				float fresnelNdotV17 = dot( normalWS, V );
+				float fresnelNode17 = ( 0.0 + 1.0 * pow( 1.0 - fresnelNdotV17, 0.1 ) );
 				
 				surfaceDescription.Normal = float3( 0, 0, 1 );
-				surfaceDescription.Smoothness = _Smoothness;
+				surfaceDescription.Smoothness = saturate( fresnelNode17 );
 				surfaceDescription.Alpha = _Alpha;
 
 				#ifdef _ALPHATEST_ON
@@ -2924,11 +2942,11 @@ Shader "SHD_Bubbles"
 
 			HLSLPROGRAM
 
-			#define _SPECULAR_OCCLUSION_FROM_AO 1
-			#define _DISABLE_DECALS 1
-			#define _DISABLE_SSR_TRANSPARENT 1
 			#define _HAS_REFRACTION 1
 			#define _REFRACTION_SPHERE 1
+			#define _DISABLE_DECALS 1
+			#define _DISABLE_SSR_TRANSPARENT 1
+			#define _SPECULAR_OCCLUSION_FROM_AO 1
 			#define ASE_SRP_VERSION 999999
 
 
@@ -2964,7 +2982,6 @@ Shader "SHD_Bubbles"
 			#endif
 			
 			CBUFFER_START( UnityPerMaterial )
-			float _Smoothness;
 			float _Alpha;
 			float _Float0;
 			float4 _EmissionColor;
@@ -3026,7 +3043,9 @@ Shader "SHD_Bubbles"
 			#include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitDecalData.hlsl"
 			#include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderGraphFunctions.hlsl"
 
-			
+			#define ASE_NEEDS_FRAG_WORLD_VIEW_DIR
+			#define ASE_NEEDS_VERT_NORMAL
+
 
 			#if defined(_DOUBLESIDED_ON) && !defined(ASE_NEED_CULLFACE)
 				#define ASE_NEED_CULLFACE 1
@@ -3051,7 +3070,7 @@ Shader "SHD_Bubbles"
 				float3 vmeshInterp00 : TEXCOORD0;
 				float3 vpassInterpolators0 : TEXCOORD1; //interpolators0
 				float3 vpassInterpolators1 : TEXCOORD2; //interpolators1
-				
+				float4 ase_texcoord3 : TEXCOORD3;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 				UNITY_VERTEX_OUTPUT_STEREO
 				#if defined(SHADER_STAGE_FRAGMENT) && defined(ASE_NEED_CULLFACE)
@@ -3196,7 +3215,12 @@ Shader "SHD_Bubbles"
 			AttributesMesh ApplyMeshModification(AttributesMesh inputMesh, float3 timeParameters, inout PackedVaryingsMeshToPS outputPackedVaryingsMeshToPS )
 			{
 				_TimeParameters.xyz = timeParameters;
+				float3 ase_worldNormal = TransformObjectToWorldNormal(inputMesh.normalOS);
+				outputPackedVaryingsMeshToPS.ase_texcoord3.xyz = ase_worldNormal;
 				
+				
+				//setting value to unused interpolator channels and avoid initialization warnings
+				outputPackedVaryingsMeshToPS.ase_texcoord3.w = 0;
 
 				#ifdef ASE_ABSOLUTE_VERTEX_POS
 				float3 defaultVertexValue = inputMesh.positionOS.xyz;
@@ -3410,9 +3434,12 @@ Shader "SHD_Bubbles"
 				BuiltinData builtinData;
 
 				SmoothSurfaceDescription surfaceDescription = (SmoothSurfaceDescription)0;
+				float3 ase_worldNormal = packedInput.ase_texcoord3.xyz;
+				float fresnelNdotV17 = dot( ase_worldNormal, V );
+				float fresnelNode17 = ( 0.0 + 1.0 * pow( 1.0 - fresnelNdotV17, 0.1 ) );
 				
 				surfaceDescription.Normal = float3( 0, 0, 1 );
-				surfaceDescription.Smoothness = _Smoothness;
+				surfaceDescription.Smoothness = saturate( fresnelNode17 );
 				surfaceDescription.Alpha = _Alpha;
 
 				#ifdef _ALPHATEST_ON
@@ -3486,11 +3513,11 @@ Shader "SHD_Bubbles"
 
 			HLSLPROGRAM
 
-			#define _SPECULAR_OCCLUSION_FROM_AO 1
-			#define _DISABLE_DECALS 1
-			#define _DISABLE_SSR_TRANSPARENT 1
 			#define _HAS_REFRACTION 1
 			#define _REFRACTION_SPHERE 1
+			#define _DISABLE_DECALS 1
+			#define _DISABLE_SSR_TRANSPARENT 1
+			#define _SPECULAR_OCCLUSION_FROM_AO 1
 			#define ASE_SRP_VERSION 999999
 
 
@@ -3536,7 +3563,6 @@ Shader "SHD_Bubbles"
 
 			// CBuffer must be declared before Material.hlsl since it internaly uses _BlendMode now
 			CBUFFER_START( UnityPerMaterial )
-			float _Smoothness;
 			float _Alpha;
 			float _Float0;
 			float4 _EmissionColor;
@@ -3602,7 +3628,9 @@ Shader "SHD_Bubbles"
 			#include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/LitDecalData.hlsl"
 			#include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderGraphFunctions.hlsl"
 
-			
+			#define ASE_NEEDS_FRAG_WORLD_VIEW_DIR
+			#define ASE_NEEDS_FRAG_WORLD_NORMAL
+
 
 			#if defined(_DOUBLESIDED_ON) && !defined(ASE_NEED_CULLFACE)
 				#define ASE_NEED_CULLFACE 1
@@ -4086,6 +4114,8 @@ Shader "SHD_Bubbles"
 				float3 V = GetWorldSpaceNormalizeViewDir(input.positionRWS);
 
 				GlobalSurfaceDescription surfaceDescription = (GlobalSurfaceDescription)0;
+				float fresnelNdotV17 = dot( normalWS, V );
+				float fresnelNode17 = ( 0.0 + 1.0 * pow( 1.0 - fresnelNdotV17, 0.1 ) );
 				
 				surfaceDescription.Albedo = float3( 0.5, 0.5, 0.5 );
 				surfaceDescription.Normal = float3( 0, 0, 1 );
@@ -4098,7 +4128,7 @@ Shader "SHD_Bubbles"
 				#endif
 
 				surfaceDescription.Emission = 0;
-				surfaceDescription.Smoothness = _Smoothness;
+				surfaceDescription.Smoothness = saturate( fresnelNode17 );
 				surfaceDescription.Occlusion = 1;
 				surfaceDescription.Alpha = _Alpha;
 
@@ -4281,23 +4311,26 @@ Shader "SHD_Bubbles"
 }
 /*ASEBEGIN
 Version=18900
--1920;0;1920;1019;1171;278.5;1;True;True
+-1910;82;1920;1013;1286;580.5;1;True;True
+Node;AmplifyShaderEditor.FresnelNode;17;-486,-379.5;Inherit;False;Standard;WorldNormal;ViewDir;False;False;5;0;FLOAT3;0,0,1;False;4;FLOAT3;0,0,0;False;1;FLOAT;0;False;2;FLOAT;1;False;3;FLOAT;0.1;False;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;12;-274,171.5;Inherit;False;Property;_Alpha;Alpha;1;0;Create;True;0;0;0;False;0;False;0;0;0;1;0;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;11;-302,90.5;Inherit;False;Property;_Smoothness;Smoothness;0;0;Create;True;0;0;0;False;0;False;0;0;0;1;0;1;FLOAT;0
+Node;AmplifyShaderEditor.SaturateNode;19;-256,-380.5;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;13;-175,297.5;Inherit;False;Property;_Float0;Float 0;2;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;1;0,0;Float;False;False;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;1;New Amplify Shader;53b46d85872c5b24c8f4f0a1c3fe4c87;True;META;0;1;META;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;5;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Meta;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;2;0,0;Float;False;False;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;1;New Amplify Shader;53b46d85872c5b24c8f4f0a1c3fe4c87;True;ShadowCaster;0;2;ShadowCaster;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;5;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;0;True;-27;False;True;False;False;False;False;0;False;-1;False;False;False;False;False;False;False;False;False;True;1;False;-1;True;3;False;-1;False;True;1;LightMode=ShadowCaster;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;3;0,0;Float;False;False;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;1;New Amplify Shader;53b46d85872c5b24c8f4f0a1c3fe4c87;True;SceneSelectionPass;0;3;SceneSelectionPass;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;5;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;False;False;False;False;0;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=SceneSelectionPass;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;4;0,0;Float;False;False;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;1;New Amplify Shader;53b46d85872c5b24c8f4f0a1c3fe4c87;True;DepthOnly;0;4;DepthOnly;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;5;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;0;True;-27;False;False;False;False;False;False;False;False;False;True;True;0;True;-7;255;False;-1;255;True;-8;7;False;-1;3;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;1;False;-1;False;False;True;1;LightMode=DepthOnly;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;5;0,0;Float;False;False;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;1;New Amplify Shader;53b46d85872c5b24c8f4f0a1c3fe4c87;True;Motion Vectors;0;5;Motion Vectors;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;5;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;0;True;-27;False;False;False;False;False;False;False;False;False;True;True;0;True;-9;255;False;-1;255;True;-10;7;False;-1;3;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;1;False;-1;False;False;True;1;LightMode=MotionVectors;False;0;;0;0;Standard;0;False;0
-Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;6;0,0;Float;False;False;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;1;New Amplify Shader;53b46d85872c5b24c8f4f0a1c3fe4c87;True;Distortion;0;6;Distortion;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;5;0;False;True;4;1;False;-1;1;False;-1;4;1;False;-1;1;False;-1;True;1;False;-1;1;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;0;True;-11;255;False;-1;255;True;-12;7;False;-1;3;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;2;False;-1;True;3;False;-1;False;True;1;LightMode=DistortionVectors;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;7;0,0;Float;False;False;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;1;New Amplify Shader;53b46d85872c5b24c8f4f0a1c3fe4c87;True;TransparentBackface;0;7;TransparentBackface;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;5;0;False;True;1;0;True;-21;0;True;-22;1;0;True;-23;0;True;-24;False;False;False;False;False;False;False;False;False;False;False;False;True;1;False;-1;False;False;False;True;True;True;True;True;0;True;-46;False;False;False;False;False;False;False;True;0;True;-25;True;0;True;-33;False;True;1;LightMode=TransparentBackface;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;6;0,0;Float;False;False;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;1;New Amplify Shader;53b46d85872c5b24c8f4f0a1c3fe4c87;True;Distortion;0;6;Distortion;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;5;0;False;True;4;1;False;-1;1;False;-1;4;1;False;-1;1;False;-1;True;1;False;-1;1;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;0;True;-11;255;False;-1;255;True;-12;7;False;-1;3;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;2;False;-1;True;3;False;-1;False;True;1;LightMode=DistortionVectors;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;8;0,0;Float;False;False;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;1;New Amplify Shader;53b46d85872c5b24c8f4f0a1c3fe4c87;True;TransparentDepthPrepass;0;8;TransparentDepthPrepass;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;5;0;False;True;1;1;False;-1;0;False;-1;0;1;False;-1;0;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;True;0;True;-27;False;False;False;False;False;False;False;False;False;True;True;0;True;-7;255;False;-1;255;True;-8;7;False;-1;3;False;-1;1;False;-1;1;False;-1;7;False;-1;3;False;-1;1;False;-1;1;False;-1;False;True;1;False;-1;False;False;True;1;LightMode=TransparentDepthPrepass;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;9;0,0;Float;False;False;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;1;New Amplify Shader;53b46d85872c5b24c8f4f0a1c3fe4c87;True;TransparentDepthPostpass;0;9;TransparentDepthPostpass;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;5;0;False;True;1;1;False;-1;0;False;-1;0;1;False;-1;0;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;True;0;True;-27;False;True;False;False;False;False;0;False;-1;False;False;False;False;False;False;False;False;False;True;1;False;-1;False;False;True;1;LightMode=TransparentDepthPostpass;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;10;0,0;Float;False;False;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;1;New Amplify Shader;53b46d85872c5b24c8f4f0a1c3fe4c87;True;Forward;0;10;Forward;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;5;0;False;True;1;0;True;-21;0;True;-22;1;0;True;-23;0;True;-24;False;False;False;False;False;False;False;False;False;False;False;False;True;0;True;-30;False;False;False;True;True;True;True;True;0;True;-46;False;False;False;False;False;True;True;0;True;-5;255;False;-1;255;True;-6;7;False;-1;3;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;0;True;-25;True;0;True;-32;False;True;1;LightMode=Forward;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;0;0,0;Float;False;True;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;2;SHD_Bubbles;53b46d85872c5b24c8f4f0a1c3fe4c87;True;GBuffer;0;0;GBuffer;35;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Transparent=RenderType;Queue=Transparent=Queue=0;True;5;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;0;True;-27;False;False;False;False;False;False;False;False;False;True;True;0;True;-14;255;False;-1;255;True;-13;7;False;-1;3;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;False;True;0;True;-15;False;True;1;LightMode=GBuffer;False;0;;0;0;Standard;42;Surface Type;1;  Rendering Pass;1;  Refraction Model;2;    Blending Mode;0;    Blend Preserves Specular;1;  Receive Fog;1;  Back Then Front Rendering;0;  Transparent Depth Prepass;0;  Transparent Depth Postpass;0;  Transparent Writes Motion Vector;0;  Distortion;0;    Distortion Mode;0;    Distortion Depth Test;1;  ZWrite;0;  Z Test;4;Double-Sided;0;Alpha Clipping;0;  Use Shadow Threshold;0;Material Type,InvertActionOnDeselection;0;  Energy Conserving Specular;1;  Transmission;1;Receive Decals;0;Receives SSR;1;Receive SSR Transparent;0;Motion Vectors;1;  Add Precomputed Velocity;0;Specular AA;0;Specular Occlusion Mode;1;Override Baked GI;0;Depth Offset;0;DOTS Instancing;0;LOD CrossFade;0;Tessellation;0;  Phong;0;  Strength;0.5,False,-1;  Type;0;  Tess;16,False,-1;  Min;10,False,-1;  Max;25,False,-1;  Edge Length;16,False,-1;  Max Displacement;25,False,-1;Vertex Position;1;0;11;True;True;True;True;True;True;False;False;False;False;True;False;;False;0
-WireConnection;0;7;11;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;1;0,0;Float;False;False;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;1;New Amplify Shader;53b46d85872c5b24c8f4f0a1c3fe4c87;True;META;0;1;META;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;5;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;2;False;-1;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=Meta;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;4;0,0;Float;False;False;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;1;New Amplify Shader;53b46d85872c5b24c8f4f0a1c3fe4c87;True;DepthOnly;0;4;DepthOnly;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;5;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;0;True;-27;False;False;False;False;False;False;False;False;False;True;True;0;True;-7;255;False;-1;255;True;-8;7;False;-1;3;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;1;False;-1;False;False;True;1;LightMode=DepthOnly;False;0;;0;0;Standard;0;False;0
+Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;5;0,0;Float;False;False;-1;2;Rendering.HighDefinition.LightingShaderGraphGUI;0;1;New Amplify Shader;53b46d85872c5b24c8f4f0a1c3fe4c87;True;Motion Vectors;0;5;Motion Vectors;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;3;RenderPipeline=HDRenderPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;True;5;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;0;True;-27;False;False;False;False;False;False;False;False;False;True;True;0;True;-9;255;False;-1;255;True;-10;7;False;-1;3;False;-1;1;False;-1;1;False;-1;7;False;-1;1;False;-1;1;False;-1;1;False;-1;False;True;1;False;-1;False;False;True;1;LightMode=MotionVectors;False;0;;0;0;Standard;0;False;0
+WireConnection;19;0;17;0
+WireConnection;0;7;19;0
 WireConnection;0;9;12;0
 WireConnection;0;17;13;0
 ASEEND*/
-//CHKSM=1811F7AFF4FCA1578AF00CF08DBA8C2AEA4265E9
+//CHKSM=40F354A130ABB7FBA2BAFDD80FA31C2B18116AAE

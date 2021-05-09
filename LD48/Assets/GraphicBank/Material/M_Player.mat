@@ -169,7 +169,7 @@ Material:
     - _Float1: 1
     - _Float2: 2
     - _Float3: 1
-    - _FringeBoost: 0
+    - _FringeBoost: 2
     - _FringeOffsetm: 0
     - _FringeTiling: 1
     - _HeightAmplitude: 0.02
@@ -245,7 +245,7 @@ Material:
     - _UVEmissive: 0
     - _UseEmissiveIntensity: 0
     - _UseShadowThreshold: 0
-    - _VOIntenisty: -0.05
+    - _VOIntenisty: -0.02
     - _ZTestDepthEqualForOpaque: 4
     - _ZTestGBuffer: 4
     - _ZTestTransparent: 4
