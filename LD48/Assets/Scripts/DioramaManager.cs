@@ -97,7 +97,7 @@ public class DioramaManager : MonoBehaviour
             {
                 if (go.gameObject.GetComponent<Renderer>() != null)
                 {
-                    transition2 = Mathf.Lerp(transition2, 5, transitionStep);
+                    transition2 = Mathf.Lerp(transition2, 5, transitionStep/2);
                     go.gameObject.GetComponent<Renderer>().material.SetFloat("_Transition", transition2);
                 }
 

@@ -13,6 +13,7 @@ TagManager:
   - Snow
   - CamZone
   - CamZone2
+  - Ground
   layers:
   - Default
   - TransparentFX
